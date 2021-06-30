@@ -1,25 +1,23 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\v1;
 
+use App\Http\Controllers\BaseController;
 use App\Http\Requests\LoginRequest;
 use App\Http\Requests\RegistrationRequest;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 
-class AuthController extends Controller
+class AuthController extends BaseController
 {
     public function __construct()
     {
-        $this->middleware('auth:api', ['except' => ['login', 'register']]);
+        $this->middleware('auth:api', ['except' => ['login']]);
     }
 
     public function register(RegistrationRequest $request)
     {
-        User::create($request->validated());
-        $token = Auth::attempt($request->validated());
-
-        return $this->respondWithToken($token);
+        return User::create($request->validated());
     }
 
     public function login(LoginRequest $request)
@@ -43,11 +41,15 @@ class AuthController extends Controller
         return auth()->user();
     }
 
+    public function refresh()
+    {
+        return $this->respondWithToken(auth()->refresh());
+    }
+
     protected function respondWithToken($token)
     {
         return response()->json([
             'token' => $token,
         ]);
     }
-
 }

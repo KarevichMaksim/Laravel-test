@@ -1,7 +1,7 @@
 <?php
 
-use App\Http\Controllers\AuthController;
-use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\v1\AuthController;
+use Dingo\Api\Routing\Router;
 
 /*
 |--------------------------------------------------------------------------
@@ -14,10 +14,17 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::group(['middleware' => 'api'], function () {
-    Route::get('profile', [AuthController::class, 'profile']);
-    Route::get('logout', [AuthController::class, 'logout']);
-});
+/** @var Router $api */
+$api = app(Router::class);
 
-Route::post('register', [AuthController::class, 'register']);
-Route::post('login', [AuthController::class, 'login']);
+$api->version('v1', function ($api) {
+
+    $api->post('login', [AuthController::class, 'login']);
+
+    $api->group(['middleware' => 'api.auth'], function ($api) {
+        $api->get('profile', [AuthController::class, 'profile']);
+        $api->post('register', [AuthController::class, 'register']);
+        $api->get('logout', [AuthController::class, 'logout']);
+    });
+
+});
