@@ -5,6 +5,7 @@ namespace App\Http\Controllers\v1;
 use App\Http\Controllers\BaseController;
 use App\Http\Requests\LoginRequest;
 use App\Http\Requests\RegistrationRequest;
+use App\Http\Resources\UserResource;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 
@@ -15,9 +16,12 @@ class AuthController extends BaseController
         $this->middleware('auth:api', ['except' => ['login']]);
     }
 
-    public function register(RegistrationRequest $request)
+    public function register(RegistrationRequest $request):UserResource
     {
-        return User::create($request->validated());
+        $user = User::create($request->validated());
+        $user->assignRole('user');
+
+        return new UserResource($user);
     }
 
     public function login(LoginRequest $request)
