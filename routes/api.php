@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\v1\AuthController;
+use App\Http\Controllers\v1\UserController;
 use Dingo\Api\Routing\Router;
 
 /*
@@ -15,15 +16,26 @@ use Dingo\Api\Routing\Router;
 */
 
 /** @var Router $api */
+
 $api = app(Router::class);
 
 $api->version('v1', function ($api) {
 
     $api->post('login', [AuthController::class, 'login']);
 
-    $api->group(['middleware' => 'api.auth'], function ($api) {
-        $api->get('profile', [AuthController::class, 'profile']);
-        $api->post('register', [AuthController::class, 'register']);
+    $api->group(['middleware' => 'api.auth|api'], function ($api) {
+
+        $api->group(['middleware' => 'role:admin'], function ($api) {
+            $api->post('register', [AuthController::class, 'register']);
+
+            $api->group(['prefix' => 'users'], function ($api) {
+                $api->get('/', [UserController::class, 'index']);
+                $api->put('/{user}', [UserController::class, 'update']);
+                $api->delete('/{user}', [UserController::class, 'destroy']);
+            });
+        });
+
+        $api->get('profile', [UserController::class, 'profile']);
         $api->get('logout', [AuthController::class, 'logout']);
     });
 

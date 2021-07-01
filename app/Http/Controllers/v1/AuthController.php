@@ -18,8 +18,7 @@ class AuthController extends BaseController
 
     public function register(RegistrationRequest $request):UserResource
     {
-        $user = User::create($request->validated());
-        $user->assignRole('user');
+        $user = User::create($request->validated())->assignRole('user');
 
         return new UserResource($user);
     }
@@ -38,11 +37,6 @@ class AuthController extends BaseController
         auth()->logout();
 
         return response()->noContent();
-    }
-
-    public function profile()
-    {
-        return auth()->user();
     }
 
     public function refresh()
