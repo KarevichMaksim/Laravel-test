@@ -40,4 +40,9 @@ class UserController extends Controller
     {
         return new UserResource(auth()->user());
     }
+
+    public function passwordReset(Request $request)
+    {
+        $request->user()->update($request->all());
+    }
 }

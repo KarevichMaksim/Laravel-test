@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\v1\AuthController;
 use App\Http\Controllers\v1\UserController;
+use App\Http\Controllers\v1\ForgotPasswordController;
 use Dingo\Api\Routing\Router;
 
 /*
@@ -22,6 +23,8 @@ $api = app(Router::class);
 $api->version('v1', function ($api) {
 
     $api->post('login', [AuthController::class, 'login']);
+    $api->post('password/email', [ForgotPasswordController::class, 'forgot']);
+    $api->post('password/reset', [ForgotPasswordController::class, 'reset']);
 
     $api->group(['middleware' => 'api.auth|api'], function ($api) {
 
