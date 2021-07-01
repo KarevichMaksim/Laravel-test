@@ -22,7 +22,7 @@ class UserController extends Controller
         return UserResource::collection(User::whereRoleUser()->paginate($request->query('limit')));
     }
 
-    public function update(UpdateUserRequest $request,User $user)
+    public function update(UpdateUserRequest $request, User $user)
     {
         $user->update($request->validated());
 

@@ -6,8 +6,11 @@ use App\Http\Controllers\BaseController;
 use App\Http\Requests\LoginRequest;
 use App\Http\Requests\RegistrationRequest;
 use App\Http\Resources\UserResource;
+use App\Mail\RegistrationMail;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Str;
 
 class AuthController extends BaseController
 {
@@ -16,7 +19,7 @@ class AuthController extends BaseController
         $this->middleware('auth:api', ['except' => ['login']]);
     }
 
-    public function register(RegistrationRequest $request):UserResource
+    public function register(RegistrationRequest $request)
     {
         $user = User::create($request->validated())->assignRole('user');
 
@@ -26,7 +29,7 @@ class AuthController extends BaseController
     public function login(LoginRequest $request)
     {
         if (!$token = Auth::attempt($request->validated())) {
-            return response()->noContent(401);
+            return $this->response->errorUnauthorized();
         }
 
         return $this->respondWithToken($token);
