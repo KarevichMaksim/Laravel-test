@@ -6,10 +6,9 @@ use App\Http\Controllers\BaseController;
 use App\Http\Requests\LoginRequest;
 use App\Http\Requests\RegistrationRequest;
 use App\Http\Resources\UserResource;
-use App\Mail\RegistrationMail;
+use App\Models\Company;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 
 class AuthController extends BaseController
@@ -21,9 +20,10 @@ class AuthController extends BaseController
 
     public function register(RegistrationRequest $request)
     {
-        $user = User::create($request->validated())->assignRole('user');
+        $request['password']= Str::random(25);
+        $company = Company::firstOrCreate(['name'=>$request->company]);
 
-        return new UserResource($user);
+        return new UserResource($company->users()->create($request->all())->assignRole($request->only('role')));
     }
 
     public function login(LoginRequest $request)

@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Company;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\App;
@@ -20,15 +21,18 @@ class UserSeeder extends Seeder
         Role::create(['name' => 'user']);
         Role::create(['name' => 'stopped']);
 
-        $user = User::create([
+        $company = Company::create(['name'=>'Geoptimise']);
+        $company->users()->create([
             'name' => 'admin',
             'email' => 'admin@example.com',
             'password' => 'password',
         ])->assignRole('admin');
 
         if (App::environment() !== 'production') {
-            User::factory()->count(15)->create()->each(function ($user) {
-                $user->assignRole('user');
+            Company::all()->each(function ($company){
+                User::factory()->count(2)->for($company)->create()->each(function ($user) {
+                    $user->assignRole('user');
+                });
             });
         }
     }

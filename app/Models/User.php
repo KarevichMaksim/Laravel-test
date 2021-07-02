@@ -25,6 +25,10 @@ class User extends Authenticatable implements JWTSubject
         'password',
     ];
 
+    public function company()
+    {
+        return $this->belongsTo(User::class);
+    }
 
     public function setPasswordAttribute($value)
     {
